@@ -1,6 +1,6 @@
 class PasswordResetsController < ApplicationController
-  before_action :get_user,   only: [:edit, :update]
-  before_action :valid_user, only: [:edit, :update]
+  before_action :get_user,   only: [:edit, :update], before_action :valid_user, only: [:edit, :update]
+
 
   def new
   end
@@ -10,10 +10,10 @@ class PasswordResetsController < ApplicationController
     if @user
       @user.create_reset_digest
       @user.send_password_reset_email
-      flash[:info] = "Email sent with password reset instructions"
+      flash[:info] = 'Email sent with password reset instructions'
       redirect_to root_url
     else
-      flash.now[:danger] = "Email address not found"
+      flash.now[:danger] = 'Email address not found'
       render :new
     end
   end
@@ -22,15 +22,15 @@ class PasswordResetsController < ApplicationController
   end
 
    def update
-       if params[:user][:password].empty?                  # Case (1)
-        @user.errors.add(:password, "can't be empty")
+       if params[:user][:password].empty?                  
+        @user.errors.add(:password, 'cant be empty')
         render 'edit'
-      elsif @user.update_attributes(user_params)          # Case (2)
+      elsif @user.update_attributes(user_params)         
         log_in @user
-        flash[:success] = "Password has been reset."
+        flash[:success] = 'Password has been reset.'
         redirect_to @user
       else
-        render 'edit'                                     # Case (3)
+        render 'edit'                                     
       end
     end
 
@@ -41,12 +41,15 @@ class PasswordResetsController < ApplicationController
     params.require(:user).permit :password, :password_confirmation
   end
 
-  def get_user
+  def load_user
     @user = User.find_by email: params[:email]
+       if params[:email].nil?                  
+       flash.now[:danger] = 'User is not found'
+        redirect_to root_url
   end
 
   def valid_user
-    unless (@user && @user.activated? && @user.authenticated?(:reset, params[:id]))
+   if (@user && @user.activated? && @user.authenticated?(:reset, params[:id]))
       redirect_to root_url
     end
   end
