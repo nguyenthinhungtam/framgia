@@ -10,19 +10,19 @@ class SessionsController < ApplicationController
       params[:session][:remember_me] == "1" ? remember(user) : forget(user)
       redirect_back_or user
     else
-      message = "Account not activated. Check your email for the activation link."
-      flash[:warning] = message
+      message = "Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email để kích hoạt tài khoản."
+      flash[:success] = message
       redirect_to root_url
     end
     else
-      flash.now[:danger] = "Invalid email/password combination"
+      flash.now[:success] = "Vui lòng nhập tên đăng nhập /mật khẩu đăng nhập"
       render 'new'
     end
   end
 
   def destroy
     log_out
-    # log_out if logged_in?
-    redirect_to root_url
+   
+    redirect_to help_path
   end
 end
